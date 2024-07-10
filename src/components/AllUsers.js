@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   Menu,
   MenuProvider,
@@ -14,23 +14,24 @@ import {
   ScrollView,
   StyleSheet,
   Image,
+  FlatList,
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
-import {colors} from '../colors';
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+import { colors } from '../colors';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import CheckBox from '@react-native-community/checkbox';
 import ViewUserInfoModal from './commonComponents/ViewUserInfoModal';
 import UserSettingsMenuProvider from './commonComponents/UserSettingsMenuProvider';
 
 const Tab = createMaterialTopTabNavigator();
 
-const {Popover} = renderers;
+const { Popover } = renderers;
 
 const MyPopover = () => (
-  <Menu renderer={Popover} rendererProps={{preferredPlacement: 'bottom'}}>
+  <Menu renderer={Popover} rendererProps={{ preferredPlacement: 'bottom' }}>
     <MenuTrigger style={styles.menuTrigger}>
       <SimpleLineIcons name="options-vertical" size={15} color="#131314" />
     </MenuTrigger>
@@ -65,11 +66,22 @@ const MyPopover = () => (
   </Menu>
 );
 
-const Row = () => (
-  <View style={styles.row}>
-    <MyPopover />
-  </View>
-);
+const users = [
+  { id:1, name: 'Zoe Wright', email: 'zoew@email.com', date: '12-02-23', checked: false },
+  { id:2, name: 'Zoe Wright', email: 'zoew@email.com', date: '12-02-23', checked: false },
+  { id:3, name: 'Zoe Wright', email: 'zoew@email.com', date: '12-02-23', checked: false },
+  { id:4, name: 'Zoe Wright', email: 'zoew@email.com', date: '12-02-23', checked: false },
+  { id:5, name: 'Zoe Wright', email: 'zoew@email.com', date: '12-02-23', checked: false },
+  { id:6, name: 'Zoe Wright', email: 'zoew@email.com', date: '12-02-23', checked: false },
+  { id:7, name: 'Zoe Wright', email: 'zoew@email.com', date: '12-02-23', checked: false },
+  { id:8, name: 'Zoe Wright', email: 'zoew@email.com', date: '12-02-23', checked: false },
+  { id:9, name: 'Zoe Wright', email: 'zoew@email.com', date: '12-02-23', checked: false },
+  { id:10, name: 'Zoe Wright', email: 'zoew@email.com', date: '12-02-23', checked: false },
+  { id:11, name: 'Zoe Wright', email: 'zoew@email.com', date: '12-02-23', checked: false },
+  { id:12, name: 'Zoe Wright', email: 'zoew@email.com', date: '12-02-23', checked: false },
+  { id:13, name: 'Zoe Wright', email: 'zoew@email.com', date: '12-02-23', checked: false },
+  { id:14, name: 'Zoe Wright', email: 'zoew@email.com', date: '12-02-23', checked: false },
+];
 
 const ConsumerList = () => {
   const [isModalVisible, setModalVisible] = useState(false);
@@ -78,399 +90,116 @@ const ConsumerList = () => {
   };
   const [toggleCheckBoxMain, setToggleCheckBoxMain] = useState(false);
   const [toggleCheckBoxUser, setToggleCheckBoxUser] = useState(false);
+  const [usersCheck, setUsersCheck] = useState(users);
+
+  const toggleCheckBox = (index) => {
+    const newUsers = [...usersCheck];
+    newUsers[index].checked = !newUsers[index].checked;
+    setUsersCheck(newUsers);
+  };
+
+  const UserInfoCard = ({ item, toggleCheckBox, isChecked }) => {
+    return (
+      <View style={styles.userInfoCard}>
+        <View style={{ width: '10%' }}>
+          <CheckBox
+            disabled={false}
+            value={isChecked}
+            onValueChange={toggleCheckBox}
+            style={{ alignSelf: 'flex-start' }}
+            tintColors={{ true: '#1D374E', false: '#000000' }}
+          />
+        </View>
+        <View style={{ width: '30%' }}>
+          <Text style={styles.userMainHeadings}>{item.name}</Text>
+        </View>
+        <View style={{ width: '35%' }}>
+          <Text style={styles.userMainHeadings}>{item.email}</Text>
+        </View>
+        <View style={{ width: '20%' }}>
+          <Text style={styles.userMainHeadings}>{item.date}</Text>
+        </View>
+        <View style={{ width: '5%' }}>
+          <Menu
+           renderer={Popover}
+          rendererProps={{
+            preferredPlacement: 'top',
+            anchorStyle: { backgroundColor: '#fff', top:-82, },
+            arrowStyle: styles.arrow,
+            arrow: false,
+          }}
+          >
+            <MenuTrigger style={styles.menuTrigger}>
+              <SimpleLineIcons name="options-vertical" size={15} color="#131314" />
+            </MenuTrigger>
+            <MenuOptions customStyles={{ optionsContainer: styles.menuOptions }}>
+              <TouchableOpacity style={styles.userCard} onPress={() => alert('View user info')}>
+                <AntDesign name="eye" size={15} color="#131314" />
+                <Text style={styles.optionText}>View user info</Text>
+              </TouchableOpacity>
+              <View style={styles.borderShowOff} />
+              <TouchableOpacity style={styles.userCard} onPress={() => alert('Update user info')}>
+                <FontAwesome name="edit" size={15} color="#131314" />
+                <Text style={styles.optionText}>Update user info</Text>
+              </TouchableOpacity>
+              <View style={styles.borderShowOff} />
+              <TouchableOpacity style={styles.userCard} onPress={() => alert('Remove user')}>
+                <MaterialCommunityIcons name="delete" size={15} color="#131314" />
+                <Text style={styles.optionText}>Remove user</Text>
+              </TouchableOpacity>
+              <View style={styles.borderShowOff} />
+              <TouchableOpacity style={styles.userCard} onPress={() => alert('Cancel')}>
+                <Text style={styles.cancelText}>Cancel</Text>
+              </TouchableOpacity>
+            </MenuOptions>
+          </Menu>
+        </View>
+      </View>
+    );
+  };
+
+  const renderItem = ({ item, index }) => (
+    <UserInfoCard
+      item={item}
+      toggleCheckBox={() => toggleCheckBox(index)}
+      isChecked={item.checked}
+    />
+  );
 
   return (
-    <ScrollView style={{width: '100%'}}>
+    <ScrollView style={{ width: '100%', height:"100%" }}>
       <View>
         <View style={styles.listHeader}>
           <View style={styles.listCardMain}>
-            <View style={{width: '10%'}}>
+            <View style={{ width: '10%' }}>
               <CheckBox
                 disabled={false}
                 value={toggleCheckBoxMain}
                 onValueChange={newValue => setToggleCheckBoxMain(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
+                style={{ alignSelf: 'flex-start' }}
+                tintColors={{ true: '#1D374E', false: '#000000' }}
               />
             </View>
-            <View style={{width: '30%'}}>
+            <View style={{ width: '30%' }}>
               <Text style={styles.userHeadings}>Name</Text>
             </View>
-            <View style={{width: '35%'}}>
+            <View style={{ width: '35%' }}>
               <Text style={styles.userHeadings}>Email</Text>
             </View>
-            <View style={{width: '20%'}}>
+            <View style={{ width: '20%' }}>
               <Text style={styles.userHeadings}>Join date</Text>
             </View>
-            <View style={{width: '5%'}} />
+            <View style={{ width: '5%' }} />
           </View>
         </View>
-
-        <View style={{paddingHorizontal: 10}}>
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <MenuProvider
-                style={styles.container}>
-                <Row />
-              </MenuProvider>
-              {/* <TouchableOpacity >
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity> */}
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
+        <MenuProvider>
+      <FlatList
+        data={users}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => index.toString()}
+        contentContainerStyle={{ paddingHorizontal: 10 }}
+      />
+    </MenuProvider>
       </View>
       {/* User Info Modal is here  */}
       <ViewUserInfoModal
@@ -481,803 +210,263 @@ const ConsumerList = () => {
   );
 };
 
-const DeliveryBoyList = ({navigation}) => {
+const DeliveryBoyList = ({ navigation }) => {
   const [toggleCheckBoxMain, setToggleCheckBoxMain] = useState(false);
   const [toggleCheckBoxUser, setToggleCheckBoxUser] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const toggleModal = vehicleDetails => {
+    setModalVisible(!isModalVisible);
+  };
+  const [usersCheck, setUsersCheck] = useState(users);
 
-  return (
-    <ScrollView style={{width: '100%'}}>
-      <View>
-        <View style={styles.listHeader}>
-          <View style={styles.listCardMain}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxMain}
-                onValueChange={newValue => setToggleCheckBoxMain(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userHeadings}>Name</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userHeadings}>Email</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userHeadings}>Join date</Text>
-            </View>
-            <View style={{width: '5%'}} />
-          </View>
+  const toggleCheckBox = (index) => {
+    const newUsers = [...usersCheck];
+    newUsers[index].checked = !newUsers[index].checked;
+    setUsersCheck(newUsers);
+  };
+
+  const UserInfoCard = ({ item, toggleCheckBox, isChecked }) => {
+    return (
+      <View style={styles.userInfoCard}>
+        <View style={{ width: '10%' }}>
+          <CheckBox
+            disabled={false}
+            value={isChecked}
+            onValueChange={toggleCheckBox}
+            style={{ alignSelf: 'flex-start' }}
+            tintColors={{ true: '#1D374E', false: '#000000' }}
+          />
         </View>
-
-        <View style={{paddingHorizontal: 10}}>
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
+        <View style={{ width: '30%' }}>
+          <Text style={styles.userMainHeadings}>{item.name}</Text>
+        </View>
+        <View style={{ width: '35%' }}>
+          <Text style={styles.userMainHeadings}>{item.email}</Text>
+        </View>
+        <View style={{ width: '20%' }}>
+          <Text style={styles.userMainHeadings}>{item.date}</Text>
+        </View>
+        <View style={{ width: '5%' }}>
+          <Menu
+           renderer={Popover}
+          rendererProps={{
+            preferredPlacement: 'top',
+            anchorStyle: { backgroundColor: '#fff', top:-82, },
+            arrowStyle: styles.arrow,
+            arrow: false,
+          }}
+          >
+            <MenuTrigger style={styles.menuTrigger}>
+              <SimpleLineIcons name="options-vertical" size={15} color="#131314" />
+            </MenuTrigger>
+            <MenuOptions customStyles={{ optionsContainer: styles.menuOptions }}>
+              <TouchableOpacity style={styles.userCard} onPress={() => alert('View user info')}>
+                <AntDesign name="eye" size={15} color="#131314" />
+                <Text style={styles.optionText}>View user info</Text>
               </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
+              <View style={styles.borderShowOff} />
+              <TouchableOpacity style={styles.userCard} onPress={() => alert('Update user info')}>
+                <FontAwesome name="edit" size={15} color="#131314" />
+                <Text style={styles.optionText}>Update user info</Text>
               </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
+              <View style={styles.borderShowOff} />
+              <TouchableOpacity style={styles.userCard} onPress={() => alert('Remove user')}>
+                <MaterialCommunityIcons name="delete" size={15} color="#131314" />
+                <Text style={styles.optionText}>Remove user</Text>
               </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
+              <View style={styles.borderShowOff} />
+              <TouchableOpacity style={styles.userCard} onPress={() => alert('Cancel')}>
+                <Text style={styles.cancelText}>Cancel</Text>
               </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
+            </MenuOptions>
+          </Menu>
         </View>
       </View>
-    </ScrollView>
+    );
+  };
+
+  const renderItem = ({ item, index }) => (
+    <UserInfoCard
+      item={item}
+      toggleCheckBox={() => toggleCheckBox(index)}
+      isChecked={item.checked}
+    />
+  );
+
+  return (
+    <ScrollView style={{ width: '100%', height:"100%" }}>
+    <View>
+      <View style={styles.listHeader}>
+        <View style={styles.listCardMain}>
+          <View style={{ width: '10%' }}>
+            <CheckBox
+              disabled={false}
+              value={toggleCheckBoxMain}
+              onValueChange={newValue => setToggleCheckBoxMain(newValue)}
+              style={{ alignSelf: 'flex-start' }}
+              tintColors={{ true: '#1D374E', false: '#000000' }}
+            />
+          </View>
+          <View style={{ width: '30%' }}>
+            <Text style={styles.userHeadings}>Name</Text>
+          </View>
+          <View style={{ width: '35%' }}>
+            <Text style={styles.userHeadings}>Email</Text>
+          </View>
+          <View style={{ width: '20%' }}>
+            <Text style={styles.userHeadings}>Join date</Text>
+          </View>
+          <View style={{ width: '5%' }} />
+        </View>
+      </View>
+      <MenuProvider>
+      <FlatList
+        data={users}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => index.toString()}
+        contentContainerStyle={{ paddingHorizontal: 10 }}
+      />
+    </MenuProvider>
+    </View>
+    {/* User Info Modal is here  */}
+    <ViewUserInfoModal
+      isModalVisible={isModalVisible}
+      setModalVisible={setModalVisible}
+    />
+  </ScrollView>
   );
 };
 
-const EnterpriseList = ({navigation}) => {
+const EnterpriseList = ({ navigation }) => {
   const [toggleCheckBoxMain, setToggleCheckBoxMain] = useState(false);
   const [toggleCheckBoxUser, setToggleCheckBoxUser] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const toggleModal = vehicleDetails => {
+    setModalVisible(!isModalVisible);
+  };
+  const [usersCheck, setUsersCheck] = useState(users);
+
+  const toggleCheckBox = (index) => {
+    const newUsers = [...usersCheck];
+    newUsers[index].checked = !newUsers[index].checked;
+    setUsersCheck(newUsers);
+  };
+
+  const UserInfoCard = ({ item, toggleCheckBox, isChecked }) => {
+    return (
+      <View style={styles.userInfoCard}>
+        <View style={{ width: '10%' }}>
+          <CheckBox
+            disabled={false}
+            value={isChecked}
+            onValueChange={toggleCheckBox}
+            style={{ alignSelf: 'flex-start' }}
+            tintColors={{ true: '#1D374E', false: '#000000' }}
+          />
+        </View>
+        <View style={{ width: '30%' }}>
+          <Text style={styles.userMainHeadings}>{item.name}</Text>
+        </View>
+        <View style={{ width: '35%' }}>
+          <Text style={styles.userMainHeadings}>{item.email}</Text>
+        </View>
+        <View style={{ width: '20%' }}>
+          <Text style={styles.userMainHeadings}>{item.date}</Text>
+        </View>
+        <View style={{ width: '5%' }}>
+          <Menu
+           renderer={Popover}
+          rendererProps={{
+            preferredPlacement: 'top',
+            anchorStyle: { backgroundColor: '#fff', top:-82, },
+            arrowStyle: styles.arrow,
+            arrow: false,
+          }}
+          >
+            <MenuTrigger style={styles.menuTrigger}>
+              <SimpleLineIcons name="options-vertical" size={15} color="#131314" />
+            </MenuTrigger>
+            <MenuOptions customStyles={{ optionsContainer: styles.menuOptions }}>
+              <TouchableOpacity style={styles.userCard} onPress={() => alert('View user info')}>
+                <AntDesign name="eye" size={15} color="#131314" />
+                <Text style={styles.optionText}>View user info</Text>
+              </TouchableOpacity>
+              <View style={styles.borderShowOff} />
+              <TouchableOpacity style={styles.userCard} onPress={() => alert('Update user info')}>
+                <FontAwesome name="edit" size={15} color="#131314" />
+                <Text style={styles.optionText}>Update user info</Text>
+              </TouchableOpacity>
+              <View style={styles.borderShowOff} />
+              <TouchableOpacity style={styles.userCard} onPress={() => alert('Remove user')}>
+                <MaterialCommunityIcons name="delete" size={15} color="#131314" />
+                <Text style={styles.optionText}>Remove user</Text>
+              </TouchableOpacity>
+              <View style={styles.borderShowOff} />
+              <TouchableOpacity style={styles.userCard} onPress={() => alert('Cancel')}>
+                <Text style={styles.cancelText}>Cancel</Text>
+              </TouchableOpacity>
+            </MenuOptions>
+          </Menu>
+        </View>
+      </View>
+    );
+  };
+
+  const renderItem = ({ item, index }) => (
+    <UserInfoCard
+      item={item}
+      toggleCheckBox={() => toggleCheckBox(index)}
+      isChecked={item.checked}
+    />
+  );
 
   return (
-    <ScrollView style={{width: '100%'}}>
+    <ScrollView style={{ width: '100%', height:"100%" }}>
       <View>
         <View style={styles.listHeader}>
           <View style={styles.listCardMain}>
-            <View style={{width: '10%'}}>
+            <View style={{ width: '10%' }}>
               <CheckBox
                 disabled={false}
                 value={toggleCheckBoxMain}
                 onValueChange={newValue => setToggleCheckBoxMain(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
+                style={{ alignSelf: 'flex-start' }}
+                tintColors={{ true: '#1D374E', false: '#000000' }}
               />
             </View>
-            <View style={{width: '30%'}}>
+            <View style={{ width: '30%' }}>
               <Text style={styles.userHeadings}>Name</Text>
             </View>
-            <View style={{width: '35%'}}>
+            <View style={{ width: '35%' }}>
               <Text style={styles.userHeadings}>Email</Text>
             </View>
-            <View style={{width: '20%'}}>
+            <View style={{ width: '20%' }}>
               <Text style={styles.userHeadings}>Join date</Text>
             </View>
-            <View style={{width: '5%'}} />
+            <View style={{ width: '5%' }} />
           </View>
         </View>
-
-        <View style={{paddingHorizontal: 10}}>
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.userInfoCard}>
-            <View style={{width: '10%'}}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBoxUser}
-                onValueChange={newValue => setToggleCheckBoxUser(newValue)}
-                style={{alignSelf: 'flex-start'}}
-                tintColors={{true: '#1D374E', false: '#000000'}}
-              />
-            </View>
-            <View style={{width: '30%'}}>
-              <Text style={styles.userMainHeadings}>Zoe Wright</Text>
-            </View>
-            <View style={{width: '35%'}}>
-              <Text style={styles.userMainHeadings}>zoew@email.com</Text>
-            </View>
-            <View style={{width: '20%'}}>
-              <Text style={styles.userMainHeadings}>12-02-23</Text>
-            </View>
-            <View style={{width: '5%'}}>
-              <TouchableOpacity>
-                <SimpleLineIcons
-                  name="options-vertical"
-                  size={15}
-                  color="#131314"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
+        <MenuProvider>
+      <FlatList
+        data={users}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => index.toString()}
+        contentContainerStyle={{ paddingHorizontal: 10 }}
+      />
+    </MenuProvider>
       </View>
+      {/* User Info Modal is here  */}
+      <ViewUserInfoModal
+        isModalVisible={isModalVisible}
+        setModalVisible={setModalVisible}
+      />
     </ScrollView>
   );
 };
 
 const Consumer = () => {
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <ConsumerList />
     </View>
   );
@@ -1285,7 +474,7 @@ const Consumer = () => {
 
 const DeliveryBoy = () => {
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <DeliveryBoyList />
     </View>
   );
@@ -1293,17 +482,17 @@ const DeliveryBoy = () => {
 
 const Enterprise = () => {
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <EnterpriseList />
     </View>
   );
 };
 
-function AllUsers({navigation}) {
+function AllUsers({ navigation }) {
   const [searchText, setSearchText] = useState('');
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <View
         style={{
           paddingHorizontal: 15,
@@ -1334,9 +523,9 @@ function AllUsers({navigation}) {
         screenOptions={{
           tabBarActiveTintColor: colors.primary,
           tabBarInactiveTintColor: colors.subText,
-          tabBarLabelStyle: {fontSize: 12, fontFamily: 'Montserrat-SemiBold'},
-          tabBarIndicatorStyle: {backgroundColor: colors.primary},
-          tabBarStyle: {backgroundColor: '#fff'},
+          tabBarLabelStyle: { fontSize: 12, fontFamily: 'Montserrat-SemiBold' },
+          tabBarIndicatorStyle: { backgroundColor: colors.primary },
+          tabBarStyle: { backgroundColor: '#fff' },
         }}>
         <Tab.Screen name="Consumer" component={Consumer} />
         <Tab.Screen name="Delivery Boy">
@@ -1429,8 +618,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  backdrop: {},
   menuOptions: {
+    height:"100%",
+    zIndex:99,
   },
   menuTrigger: {
     padding: 5,
@@ -1443,7 +633,7 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: 12,
-    fontFamily: 'Montserrat-Medium', 
+    fontFamily: 'Montserrat-Medium',
     color: colors.primary,
     marginLeft: 8,
   },
@@ -1459,7 +649,7 @@ const styles = StyleSheet.create({
   },
   cancelText: {
     fontSize: 12,
-    fontFamily: 'Montserrat-Medium', 
+    fontFamily: 'Montserrat-Medium',
     color: colors.subText,
     marginLeft: 25,
   },
